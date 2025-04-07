@@ -29,18 +29,22 @@ jobs:
           ./gradlew :module:assembleRelease
 
       - name: Upload artifact
-        id: upload_artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: zygisk-il2cppdumper
           path: out/magisk_module_release/
 
-      # 可选：验证上传是否成功
-      - name: Verify upload
+      # Optional: Download and verify the artifact
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: zygisk-il2cppdumper
+
+      - name: Verify artifact
         run: |
-          if [ -z "${{ steps.upload_artifact.outputs.artifact }}" ]; then
-            echo "Error: Artifact upload failed."
-            exit 1
+          if [ -d "out/magisk_module_release" ]; then
+            echo "Artifact downloaded and verified successfully."
           else
-            echo "Artifact uploaded successfully."
+            echo "Error: Artifact download or verification failed."
+            exit 1
           fi
