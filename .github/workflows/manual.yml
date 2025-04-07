@@ -1,4 +1,4 @@
-name: Build
+name: Build and Upload Artifact
 
 on:
   workflow_dispatch:
@@ -29,7 +29,18 @@ jobs:
           ./gradlew :module:assembleRelease
 
       - name: Upload artifact
+        id: upload_artifact
         uses: actions/upload-artifact@v3
         with:
           name: zygisk-il2cppdumper
           path: out/magisk_module_release/
+
+      # 可选：验证上传是否成功
+      - name: Verify upload
+        run: |
+          if [ -z "${{ steps.upload_artifact.outputs.artifact }}" ]; then
+            echo "Error: Artifact upload failed."
+            exit 1
+          else
+            echo "Artifact uploaded successfully."
+          fi
